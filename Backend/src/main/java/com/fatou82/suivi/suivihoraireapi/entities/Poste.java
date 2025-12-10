@@ -3,14 +3,17 @@ package com.fatou82.suivi.suivihoraireapi.entities;
 import jakarta.persistence.*;
 import lombok.*;
 import java.util.Set;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@lombok.EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Poste {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @lombok.EqualsAndHashCode.Include
     private Long id;
     
     @Column(nullable = false, unique = true)
@@ -23,5 +26,7 @@ public class Poste {
     
     // Relation inverse : Un Poste peut concerner plusieurs Employés
     @OneToMany(mappedBy = "poste", fetch = FetchType.LAZY)
+    @lombok.ToString.Exclude
+    @JsonIgnore
     private Set<Employe> employes;
 }

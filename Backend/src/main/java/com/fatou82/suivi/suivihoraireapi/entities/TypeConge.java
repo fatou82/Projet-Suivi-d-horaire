@@ -13,6 +13,5 @@ public class TypeConge {
     private Long id;
 
     private String nom;
-    private Integer joursAlloues;
-    
+    private Integer joursAlloues;   
 }

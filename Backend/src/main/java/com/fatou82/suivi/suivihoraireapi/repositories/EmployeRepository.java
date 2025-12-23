@@ -17,6 +17,9 @@ public interface EmployeRepository extends JpaRepository<Employe, Long> {
     // Trouve le dernier employé pour un poste donné (méthode dérivée Spring Data JPA)
     Optional<Employe> findTopByPoste_IdOrderByIdDesc(Long posteId);
 
+// Méthode pour compter les employés rattachés à un poste spécifique
+    long countByPosteId(Long posteId);
+
     // Vérifie s'il existe au moins un employé possédant le rôle donné
     boolean existsByRolesNom(com.fatou82.suivi.suivihoraireapi.enums.RoleType nom);
 }

@@ -1,14 +1,17 @@
 package com.fatou82.suivi.suivihoraireapi.entities;
 
-import jakarta.persistence.*;
+import jakarta.persistence.*; 
 import lombok.*;
 import java.util.Set;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import org.hibernate.envers.Audited;
 
 @Entity
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Audited
 @lombok.EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Poste {
     @Id

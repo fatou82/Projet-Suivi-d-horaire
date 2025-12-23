@@ -3,10 +3,12 @@ package com.fatou82.suivi.suivihoraireapi.entities;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDateTime;
+import org.hibernate.envers.Audited;
 
 import com.fatou82.suivi.suivihoraireapi.enums.PointageType;
 
 @Entity
+@Audited
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

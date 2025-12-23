@@ -12,5 +12,6 @@ public class RegisterRequest {
     // Date attendu en format dd/MM/yyyy ou ISO (yyyy-MM-dd)
     private String dateEmbauche;
     // Nom du poste (ex: "Comptable")
+    private String roleName; // Ex: "MANAGER", "RESSOURCE_HUMAINE", "EMPLOYE"
     private String poste;
 }

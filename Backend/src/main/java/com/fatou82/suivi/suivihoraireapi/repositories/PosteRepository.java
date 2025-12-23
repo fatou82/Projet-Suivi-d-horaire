@@ -14,4 +14,7 @@ public interface PosteRepository extends JpaRepository<Poste, Long> {
     
     // Utile pour vérifier l'unicité des abréviations
     boolean existsByAbreviation(String abreviation);
+
+    // Ajouté pour pouvoir récupérer le poste lors de la vérification dans le service (Update)
+    Optional<Poste> findByAbreviation(String abreviationUpper);
 }

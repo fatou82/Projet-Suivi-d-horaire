@@ -4,10 +4,12 @@ import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDate;
 import java.util.Set;
+import org.hibernate.envers.Audited;
 
 import com.fatou82.suivi.suivihoraireapi.enums.DemandeStatus;
 
 @Entity
+@Audited
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

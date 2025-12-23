@@ -2,6 +2,7 @@ package com.fatou82.suivi.suivihoraireapi.controllers;
 
 import com.fatou82.suivi.suivihoraireapi.dto.AuthRequest;
 import com.fatou82.suivi.suivihoraireapi.dto.AuthResponse;
+import com.fatou82.suivi.suivihoraireapi.dto.ChangePasswordRequest;
 import com.fatou82.suivi.suivihoraireapi.entities.Employe;
 import com.fatou82.suivi.suivihoraireapi.services.EmployeService;
 import com.fatou82.suivi.suivihoraireapi.utils.JwtUtil;
@@ -27,6 +28,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
+import java.security.Principal;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -102,7 +104,7 @@ public class AuthController {
     @PostMapping("/register")
     public ResponseEntity<?> registerUser(@Valid @RequestBody com.fatou82.suivi.suivihoraireapi.dto.RegisterRequest registerRequest) {
         try {
-            com.fatou82.suivi.suivihoraireapi.entities.Employe created = employeService.createNewEmployeFromRegister(registerRequest);
+            com.fatou82.suivi.suivihoraireapi.entities.Employe created = employeService.createNewEmployeForPublicRegistration(registerRequest);
             EmployeDTO dto = employeMapper.toDto(created);
             return ResponseEntity.status(HttpStatus.CREATED).body(dto);
         } catch (RuntimeException e) {
@@ -111,4 +113,24 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         }
     }
+
+    /**
+     * Endpoint: PATCH /api/auth/change-password
+     * Permet à l'utilisateur connecté de modifier son mot de passe.
+     */
+    @Operation(summary = "Changement de mot de passe par l'utilisateur",
+               description = "Nécessite l'ancien mot de passe pour confirmation. Accessible à tous les utilisateurs connectés.")
+    @PatchMapping("/change-password")
+    public ResponseEntity<EmployeDTO> changePassword(
+            Principal principal, 
+            @RequestBody ChangePasswordRequest req) {
+        
+        // principal.getName() retourne l'email de l'utilisateur connecté
+        Employe updatedEmploye = employeService.changePassword(principal.getName(), req);
+        EmployeDTO employeDTO = employeMapper.toDto(updatedEmploye);
+        
+        // 200 OK est standard pour un PATCH réussi
+        return ResponseEntity.ok(employeDTO);
+    }
+    
 }

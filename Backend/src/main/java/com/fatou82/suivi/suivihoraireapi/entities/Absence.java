@@ -5,8 +5,10 @@ import lombok.*;
 import java.time.LocalDate;
 
 import com.fatou82.suivi.suivihoraireapi.enums.AbsenceStatus;
+import org.hibernate.envers.Audited;
 
 @Entity
+@Audited
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

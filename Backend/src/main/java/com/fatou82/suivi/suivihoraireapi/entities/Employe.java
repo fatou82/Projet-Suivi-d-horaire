@@ -3,12 +3,17 @@ package com.fatou82.suivi.suivihoraireapi.entities;
 import jakarta.persistence.*;
 import lombok.*;
 import java.util.*;
+import org.hibernate.envers.NotAudited;
+
+import org.hibernate.envers.Audited;
+
 import java.time.LocalDate;
 
 @Entity
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Audited
 @lombok.EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Employe {
     @Id 
@@ -66,6 +71,7 @@ public class Employe {
     private Set<Pointage> pointages;
 
     // Relation avec AuditLog (1 Employe 'genere' plusieurs AuditLog)
+    @NotAudited
     @OneToMany(mappedBy = "employe", fetch = FetchType.LAZY)
     @lombok.ToString.Exclude
     private Set<AuditLog> auditLogs;

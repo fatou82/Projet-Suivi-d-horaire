@@ -17,8 +17,6 @@ public class EmployeDTO {
     private Integer soldeConge;
     private String adresse;
     private Boolean actif;
-    
-    // 📢 CHAMPS MANQUANTS : Ajoutés pour résoudre l'erreur MapStruct
     private String motDePasse; // Nécessaire dans toEntity, ignoré dans toDto
     private String posteNom; // Mappé depuis Poste.nom
     private List<String> roles; // Mappé depuis Set<Role>

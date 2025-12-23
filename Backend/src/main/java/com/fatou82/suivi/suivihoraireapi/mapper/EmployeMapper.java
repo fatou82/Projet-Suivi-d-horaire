@@ -21,7 +21,7 @@ public abstract class EmployeMapper {
     @Autowired 
     protected RoleRepository roleRepository; 
 
-    // Conversion Entité vers DTO
+    // Conversion Entité vers DTO 
     @Mapping(target = "posteNom", source = "poste.nom") 
     @Mapping(target = "roles", 
              expression = "java(employe.getRoles().stream().map(r -> r.getNom().name()).collect(java.util.stream.Collectors.toList()))") 

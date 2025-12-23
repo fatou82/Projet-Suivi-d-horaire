@@ -17,7 +17,9 @@ public class AuditLog {
     
     private String actionType; 
     private String entiteCible; 
-    private String description; 
+    private Long entiteCibleId; 
+    @Column(columnDefinition = "TEXT") // Pour stocker un JSON ou un long texte de détails
+    private String details;
 
     // Relation 'generer' avec Employe (acteur de l'action)
     @ManyToOne(fetch = FetchType.LAZY)

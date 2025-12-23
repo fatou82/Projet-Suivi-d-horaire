@@ -3,6 +3,9 @@ package com.fatou82.suivi.suivihoraireapi.entities;
 import jakarta.persistence.*;
 import lombok.*;
 import java.util.Set;
+
+import org.hibernate.envers.Audited;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import com.fatou82.suivi.suivihoraireapi.enums.RoleType;
@@ -11,6 +14,7 @@ import com.fatou82.suivi.suivihoraireapi.enums.RoleType;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Audited
 @lombok.EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Role {
     @Id

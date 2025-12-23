@@ -3,8 +3,10 @@ package com.fatou82.suivi.suivihoraireapi.entities;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDate;
+import org.hibernate.envers.Audited;
 
 @Entity
+@Audited
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

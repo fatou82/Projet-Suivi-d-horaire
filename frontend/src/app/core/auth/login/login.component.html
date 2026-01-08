@@ -1,0 +1,38 @@
+<div class="login-container">
+  <div class="login-card">
+    <h2>Connexion</h2>
+    <p>Veuillez vous connecter pour accéder à votre espace</p>
+
+    <form (ngSubmit)="onLogin()">
+
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input
+          type="email"
+          id="email"
+          name="email"
+          placeholder="nom@entreprise.com"
+          [(ngModel)]="loginData.email"
+          required>
+      </div>
+
+      <div class="form-group">
+        <label for="password">Mot de passe</label>
+        <input
+          type="password"
+          id="password"
+          name="motDePasse"
+          placeholder="••••••••"
+          [(ngModel)]="loginData.motDePasse"
+          required>
+      </div>
+
+      <button type="submit" class="btn-login">Se connecter</button>
+
+      <div class="form-footer">
+        <a href="#">Mot de passe oublié ?</a>
+      </div>
+
+    </form>
+  </div>
+</div>

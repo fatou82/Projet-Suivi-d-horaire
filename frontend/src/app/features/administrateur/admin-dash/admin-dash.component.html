@@ -1,0 +1,50 @@
+<div class="admin-layout">
+  <aside class="sidebar" [class.collapsed]="isSidebarCollapsed">
+    <div class="sidebar-header">
+      <button class="hamburger" (click)="toggleSidebar()">☰</button>
+    </div>
+    <nav class="sidebar-nav">
+      <a routerLink="/admin-dash/dashboard" routerLinkActive="active">
+        <i class="fas fa-chart-line icon"></i>
+        <span class="nav-text" *ngIf="!isSidebarCollapsed">Dashboard</span>
+      </a>
+      <a routerLink="/admin-dash/gerer-employes" routerLinkActive="active">
+        <i class="fas fa-users icon"></i>
+        <span class="nav-text" *ngIf="!isSidebarCollapsed">Gérer Employés</span>
+      </a>
+      <a routerLink="/admin-dash/gerer-postes" routerLinkActive="active">
+        <i class="fas fa-briefcase icon"></i>
+        <span class="nav-text" *ngIf="!isSidebarCollapsed">Gestion des Postes</span>
+      </a>
+      <a routerLink="/admin/rapports" routerLinkActive="active">
+        <i class="fas fa-file-alt icon"></i>
+        <span class="nav-text" *ngIf="!isSidebarCollapsed">Rapports</span>
+      </a>
+    </nav>
+  </aside>
+
+  <div class="main-content">
+    <header class="top-navbar">
+      <div class="page-title">
+        <h1>Votre application de Suivi</h1>
+      </div>
+      <div class="user-actions">
+        <button class="btn-icon" (click)="toggleProfileModal('infos')">
+          <i class="fa-solid fa-circle-user"></i>
+        </button>
+        <button class="btn-icon" (click)="toggleProfileModal('password')">
+          <i class="fa-solid fa-key"></i>
+        </button>
+        <button class="btn-icon logout" (click)="logout()">
+          <i class="fa-solid fa-circle-xmark"></i>
+        </button>
+      </div>
+    </header>
+
+    <main class="dashboard-body">
+      <router-outlet></router-outlet>
+    </main>
+  </div>
+</div>
+
+<app-edit-profil [isVisible]="isProfileOpen" [initialTab]="activeTab" (closeRequested)="isProfileOpen = false"></app-edit-profil>

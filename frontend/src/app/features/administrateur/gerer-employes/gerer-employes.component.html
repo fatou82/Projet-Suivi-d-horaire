@@ -1,0 +1,198 @@
+<div class="container-fluid p-4">
+  <h2 class="page-title">Gestion des Employés</h2>
+
+  <div class="action-bar">
+    <div class="search-container">
+      <i class="fas fa-search search-icon"></i>
+      <input
+        type="text"
+        class="search-input"
+        placeholder="Rechercher un employé..."
+        [(ngModel)]="searchTerm"
+        (input)="onSearchChange()">
+    </div>
+    <div class="filter-options">
+      <button class="btn-filter" [class.active]="showInactive" (click)="toggleInactiveFilter()">
+        <i class="fas" [ngClass]="showInactive ? 'fa-eye-slash' : 'fa-eye'"></i>
+        {{ showInactive ? 'Masquer inactifs' : 'Voir inactifs' }}
+      </button>
+    </div>
+    <button class="btn-add" (click)="toggleForm()">
+      <i class="fas fa-plus"></i> Ajoute un employé
+    </button>
+  </div>
+
+  <div class="table-responsive shadow-sm">
+    <table class="table w-100 align-middle">
+      <thead>
+      <tr>
+        <th>Matricule</th>
+        <th>Nom & Prénom</th>
+        <th>Email</th>
+        <th>Statut</th>
+        <th>Rôles</th>
+        <th>Poste</th>
+        <th class="text-center">Action</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr *ngFor="let emp of filteredEmployes" [ngClass]="{'row-inactive': !emp.actif}">
+        <td class="fw-bold">{{ emp.matricule }}</td>
+        <td>{{ emp.nom }} {{ emp.prenom }}</td>
+        <td>{{ emp.email }}</td>
+        <td>
+          <span class="badge" [ngClass]="emp.actif ? 'status-active' : 'status-inactive'">
+          {{ emp.actif ? 'Actif' : 'Inactif' }}
+        </span>
+        </td>
+        <td>
+          <div class="dropdown role-dropdown">
+            <button class="btn btn-sm role-display dropdown-toggle" type="button" (click)="toggleDropdown(emp)">
+              {{ emp.rolesDisplay }}
+            </button>
+            <ul class="dropdown-menu shadow" [class.show]="emp.isOpened">
+              <li *ngFor="let role of availableRoles" class="p-1">
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" [id]="'role-' + emp.id + '-' + role"
+                         [checked]="emp.roleNames.includes(role)" (change)="toggleRole(emp, role)">
+                  <label class="form-check-label" [for]="'role-' + emp.id + '-' + role">{{ role }}</label>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </td>
+        <td>{{ emp.posteNom }}</td>
+        <td class="text-center">
+          <div class="action-container">
+            <ng-container *ngIf="emp.actif">
+              <button class="action-icon edit-btn" (click)="updateEmployee(emp)" title="Modifier">
+                <i class="fas fa-edit"></i>
+              </button>
+              <button class="action-icon delete-btn" (click)="deleteEmployee(emp.id)" title="Désactiver">
+                <i class="fas fa-user-slash"></i>
+              </button>
+            </ng-container>
+
+            <ng-container *ngIf="!emp.actif">
+              <button class="action-icon reactivate-btn" (click)="reactivateEmployee(emp.id)" title="Réactiver">
+                <i class="fas fa-undo"></i>
+              </button>
+            </ng-container>
+          </div>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="modal-overlay" *ngIf="showForm">
+  <div class="modal-card shadow-lg">
+    <div class="modal-header">
+      <h3>
+        <i [class]="isEditMode ? 'fas fa-user-edit' : 'fas fa-user-plus'"></i>
+        {{ isEditMode ? 'Modifier l\'employé' : 'Ajouter un nouvel employé' }}
+      </h3>
+      <button class="close-btn" (click)="toggleForm()">×</button>
+    </div>
+
+    <form (ngSubmit)="saveEmployee()" class="modal-body">
+      <div class="form-row">
+        <div class="form-group-half">
+          <label class="form-label">Nom</label>
+          <input type="text" class="form-input" [(ngModel)]="currentEmployee.nom" name="nom">
+        </div>
+        <div class="form-group-half">
+          <label class="form-label">Prénom</label>
+          <input type="text" class="form-input" [(ngModel)]="currentEmployee.prenom" name="prenom">
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group-half">
+          <label class="form-label">Email Professionnel</label>
+          <input type="email" class="form-input" [(ngModel)]="currentEmployee.email" name="email">
+        </div>
+        <div class="form-group-half">
+          <label class="form-label">Date d'embauche</label>
+          <input type="date" class="form-input" [(ngModel)]="currentEmployee.dateEmbauche" name="dateEmbauche">
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group-half">
+          <label class="form-label">Adresse</label>
+          <input type="text" class="form-input" [(ngModel)]="currentEmployee.adresse" name="adresse">
+        </div>
+          <div class="form-group-half">
+            <label class="form-label" >Rôles (Max 2)</label>
+            <div class="dropdown role-dropdown w-100">
+              <button class="form-input text-start dropdown-toggle bg-white" type="button" (click)="toggleFormRolesDropdown()">
+                {{ (currentEmployee.roleNames && currentEmployee.roleNames.length > 0) ? currentEmployee.roleNames.join(', ') : 'Choisir rôles' }}
+              </button>
+              <ul class="dropdown-menu shadow w-100" [class.show]="isFormRolesOpen" style="max-height: 200px; overflow-y: auto;">
+                <li *ngFor="let role of availableRoles" class="p-2">
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox"
+                           [id]="'modal-role-' + role"
+                           [checked]="currentEmployee.roleNames?.includes(role)"
+                           (change)="onRoleToggle(role, $event)">
+                    <label class="form-check-label" [for]="'modal-role-' + role">
+                      {{ role }}
+                    </label>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group-half">
+        <label class="form-label">Poste</label>
+        <select class="form-input" [(ngModel)]="currentEmployee.posteNom" name="posteNom">
+          <option value="" disabled>Choisir un poste</option>
+          <option *ngFor="let p of availablePostes" [value]="p.nom">
+            {{ p.nom }}
+          </option>
+        </select>
+      </div>
+
+        <div class="form-group-half">
+          <label class="form-label">Statut</label>
+          <select class="form-input" [(ngModel)]="currentEmployee.actif" name="statut">
+            <option [ngValue]="true">Actif</option>
+            <option [ngValue]="false">Inactif</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="system-section" *ngIf="isEditMode">
+        <p style="font-size: 0.65rem; font-weight: 700; color: #95a5a6; margin-bottom: 6px; text-transform: uppercase;">
+          <i class="fas fa-lock"></i> Données Système
+        </p>
+        <div class="form-row" style="margin-bottom: 0;">
+          <div class="form-group-half">
+            <label class="form-label" style="font-size: 0.7rem;">Matricule</label>
+            <input type="text" class="form-input readonly-input" [value]="currentEmployee.matricule" readonly>
+          </div>
+          <div class="form-group-half">
+            <label class="form-label" style="font-size: 0.7rem;">Solde</label>
+            <input type="text" class="form-input readonly-input" [value]="currentEmployee.soldeConge" readonly>
+          </div>
+          <div class="form-group-half">
+            <label class="form-label" style="font-size: 0.7rem;">Embauche</label>
+            <input type="text" class="form-input readonly-input" [value]="currentEmployee.dateEmbauche" readonly>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn-secondary" (click)="toggleForm()">Annuler</button>
+        <button type="submit" class="btn-primary">
+          {{ isEditMode ? 'Enregistrer' : 'Ajouter' }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

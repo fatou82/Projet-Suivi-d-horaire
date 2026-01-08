@@ -1,0 +1,77 @@
+<div class="container-fluid p-4">
+  <h2 class="page-title">Gestion des Postes</h2>
+
+  <div class="action-bar">
+    <div class="search-container">
+      <i class="fas fa-search search-icon"></i>
+      <input type="text" class="search-input" placeholder="Rechercher un poste (Nom ou Abrév...)"
+             [(ngModel)]="searchTerm" (input)="applyFilters()">
+    </div>
+    <button class="btn-add" (click)="toggleForm()">
+      <i class="fas fa-plus"></i> Nouveau Poste
+    </button>
+  </div>
+
+  <div class="table-responsive shadow-sm">
+    <table class="table w-100 align-middle">
+      <thead>
+      <tr>
+        <th>Abréviation</th>
+        <th>Nom du Poste</th>
+        <th>Description</th>
+        <th class="text-center">Actions</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr *ngFor="let p of filteredPostes">
+        <td><span class="badge-abrev">{{ p.abreviation }}</span></td>
+        <td class="fw-bold">{{ p.nom }}</td>
+        <td class="text-muted small">{{ p.description || 'Aucune description' }}</td>
+        <td class="text-center">
+          <div class="action-container">
+            <button class="action-icon edit-btn" (click)="editPoste(p)" title="Modifier">
+              <i class="fas fa-edit"></i>
+            </button>
+            <button class="action-icon delete-btn" (click)="deletePoste(p.id)" title="Supprimer">
+              <i class="fas fa-trash-alt"></i>
+            </button>
+          </div>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="modal-overlay" *ngIf="showForm">
+  <div class="modal-card shadow-lg">
+    <div class="modal-header">
+      <h3>
+        <i class="fas fa-briefcase"></i>
+        {{ isEditMode ? 'Modifier le Poste' : 'Créer un Poste' }}
+      </h3>
+      <button class="close-btn" (click)="toggleForm()">×</button>
+    </div>
+
+    <form (ngSubmit)="savePoste()" class="modal-body">
+      <div class="form-row">
+        <div class="form-group-half">
+          <label class="form-label">Nom du Poste</label>
+          <input type="text" class="form-input" [(ngModel)]="currentPoste.nom" name="nom" required>
+        </div>
+        <div class="form-group-half">
+          <label class="form-label">Abréviation (3 Lettres)</label>
+          <input type="text" class="form-input" [(ngModel)]="currentPoste.abreviation" name="abreviation" maxlength="3" required>
+        </div>
+      </div>
+      <div class="form-group w-100 mt-2">
+        <label class="form-label">Description</label>
+        <textarea class="form-input" [(ngModel)]="currentPoste.description" name="description" rows="3"></textarea>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn-cancel" (click)="toggleForm()">Annuler</button>
+        <button type="submit" class="btn-save">Enregistrer</button>
+      </div>
+    </form>
+  </div>
+</div>

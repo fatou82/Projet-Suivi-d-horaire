@@ -1,0 +1,86 @@
+<div class="modal-overlay" *ngIf="isVisible">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3>
+        <i [class]="initialTab === 'infos' ? 'fa-solid fa-user-gear' : 'fa-solid fa-key'"></i>
+        {{ initialTab === 'infos' ? ' Mes Informations' : ' Sécurité' }}
+      </h3>
+      <button class="close-btn" (click)="close()"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+
+    <form [formGroup]="profileForm" class="modal-body">
+      <div class="section-container" *ngIf="initialTab === 'infos'">
+        <div class="form-group">
+          <label>Nom</label>
+          <input formControlName="nom" type="text">
+        </div>
+        <div class="form-group">
+          <label>Prénom</label>
+          <input formControlName="prenom" type="text">
+        </div>
+        <div class="form-group">
+          <label>Email</label>
+          <input formControlName="email" type="email">
+        </div>
+        <div class="form-group">
+          <label>Adresse</label>
+          <input formControlName="adresse" type="text">
+        </div>
+        <!--<div class="form-group">
+          <label>Numéro</label>
+          <input formControlName="numero" type="text">
+        </div>-->
+        <div class="form-group">
+          <label>Matricule</label>
+          <input formControlName="matricule" type="text" readonly class="readonly-input">
+        </div>
+
+        <div class="form-group">
+          <label>Poste</label>
+          <input formControlName="posteNom" type="text" readonly class="readonly-input">
+        </div>
+
+        <div class="form-group">
+          <label>Date d'embauche</label>
+          <input formControlName="dateEmbauche" type="text" readonly class="readonly-input">
+        </div>
+
+        <div class="form-group">
+          <label>Solde congés</label>
+          <input formControlName="soldeConge" type="text" readonly class="readonly-input">
+        </div>
+
+        <div class="form-group">
+          <label>Rôles</label>
+          <input formControlName="roles" type="text" readonly class="readonly-input">
+        </div>
+        <div class="actions">
+          <button type="button" (click)="onSubmitProfile()" class="btn-submit">
+            <i class="fa-solid fa-pen"></i> Modifier
+          </button>
+        </div>
+      </div>
+
+      <div class="section-container password-box" *ngIf="initialTab === 'password'">
+        <div class="form-group">
+          <label>Ancien mot de passe</label>
+          <input formControlName="oldPassword" type="password">
+        </div>
+        <div class="form-group">
+          <label>Nouveau mot de passe</label>
+          <input formControlName="newPassword" type="password">
+        </div>
+        <div class="form-group">
+          <label>Confirmé</label>
+          <input formControlName="confirmPassword" type="password">
+        </div>
+
+        <div class="actions">
+          <button type="button" (click)="onSubmitPassword()" class="btn-submit">
+            <i class="fa-solid fa-pen"></i> Modifier
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>

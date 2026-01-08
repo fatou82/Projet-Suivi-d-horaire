@@ -1,0 +1,107 @@
+.modal-content {
+  background: white;
+  padding: 30px;
+  border-radius: 12px;
+  width: 80%;
+  max-width: 500px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+  overflow: hidden;
+}
+
+/* Overlay flouté */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(4px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  animation: fadeIn 0.3s ease-out;
+}
+
+.modal-header {
+  text-align: center;
+  margin-bottom: 25px;
+  position: relative;
+}
+
+.modal-header h3 {
+  font-size: 24px;
+  font-weight: 500;
+  color: #333;
+}
+
+/* Alignement Label/Input comme sur le wireframe */
+.form-group {
+  display: flex;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.form-group label {
+  width: 160px; /* Largeur fixe pour aligner tous les inputs */
+  font-size: 16px;
+  color: #444;
+  font-weight: 500;
+}
+
+.form-group input {
+  flex: 1; /* Prend le reste de la place */
+  max-width: 250px; /* Limite la longueur des inputs */
+  padding: 8px 12px;
+  border: 1px solid #999;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+/* Bouton Modifier bleu */
+.actions {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.btn-submit {
+  background-color: #8db4e2; /* Bleu ciel du wireframe */
+  color: #000;
+  border: 1px solid #333;
+  padding: 8px 25px;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-submit:hover {
+  background-color: #76a1d4;
+}
+
+/* Style pour les champs en lecture seule */
+.readonly {
+  background-color: #f5f5f5;
+  color: #777;
+}
+
+.readonly-input {
+  background-color: #f0f0f0; /* Gris clair */
+  color: #666;
+  border: 1px solid #ccc;
+  cursor: not-allowed;
+}
+
+.close-btn {
+  position: absolute;
+  right: -10px;
+  top: -10px;
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+}
+.close-btn:hover {
+  color: #ff0000;
+}

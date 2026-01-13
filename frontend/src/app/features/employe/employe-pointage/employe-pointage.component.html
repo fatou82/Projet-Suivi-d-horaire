@@ -1,0 +1,80 @@
+<div class="container-fluid">
+  <h1 class="page-title">Gestion du Temps de Travail</h1>
+
+  <div class="action-bar-wrapper">
+
+    <div class="filter-controls-left">
+      <div class="filter-group">
+        <div class="search-container">
+          <i class="fas fa-calendar-alt search-icon"></i>
+          <input type="date" class="search-input" [(ngModel)]="dateFiltre" (change)="filtrerParDate()">
+        </div>
+        <button class="btn-all" (click)="chargerTout()">
+          <i class="fas fa-list-ul"></i> TOUT
+        </button>
+      </div>
+    </div>
+
+    <div class="action-group-buttons-right">
+      <button (click)="fairePointer('ENTREE')"
+              [disabled]="estDejaPointe('ENTREE')"
+              class="btn-add btn-success-custom"
+              [ngClass]="{'btn-disabled': estDejaPointe('ENTREE')}">
+        <i class="fas fa-sign-in-alt"></i> ARRIVÉE
+      </button>
+
+      <button (click)="fairePointer('DEBUT_PAUSE')"
+              [disabled]="estDejaPointe('DEBUT_PAUSE')"
+              class="btn-add btn-warning-custom"
+              [ngClass]="{'btn-disabled': estDejaPointe('DEBUT_PAUSE')}">
+        <i class="fas fa-pause"></i> PAUSE
+      </button>
+
+      <button (click)="fairePointer('FIN_PAUSE')"
+              [disabled]="estDejaPointe('FIN_PAUSE')"
+              class="btn-add btn-info-custom"
+              [ngClass]="{'btn-disabled': estDejaPointe('FIN_PAUSE')}">
+        <i class="fas fa-play"></i> REPRISE
+      </button>
+
+      <button (click)="fairePointer('SORTIE')"
+              [disabled]="estDejaPointe('SORTIE')"
+              class="btn-add btn-danger-custom"
+              [ngClass]="{'btn-disabled': estDejaPointe('SORTIE')}">
+        <i class="fas fa-sign-out-alt"></i> DÉPART
+      </button>
+    </div>
+  </div>
+
+  <div class="table-container-wrapper">
+    <div class="table-responsive shadow-sm">
+      <table class="table">
+        <thead>
+        <tr>
+          <th>DATE & HEURE</th>
+          <th>TYPE D'ACTION</th>
+          <th>DURÉE</th>
+          <th>SOURCE</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let p of pointagesAffiches">
+          <td class="fw-bold">{{ p.heurePointage | date:'dd/MM/yyyy HH:mm:ss' }}</td>
+          <td>
+              <span [ngClass]="{
+                'status-badge bg-success-soft': p.typePointage === 'ENTREE',
+                'status-badge bg-warning-soft': p.typePointage === 'DEBUT_PAUSE',
+                'status-badge bg-info-soft': p.typePointage === 'FIN_PAUSE',
+                'status-badge bg-danger-soft': p.typePointage === 'SORTIE'
+              }">
+                {{ p.typePointage }}
+              </span>
+          </td>
+          <td class="text-secondary fw-medium">{{ p.dureeTotale ? (p.dureeTotale | number:'1.2-2') + ' h' : '--' }}</td>
+          <td><span class="badge-source"><i class="fas fa-laptop"></i> {{ p.source }}</span></td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

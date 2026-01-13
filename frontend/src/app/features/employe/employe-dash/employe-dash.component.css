@@ -1,0 +1,136 @@
+/* Layout Global */
+.admin-layout {
+  display: flex;
+  min-height: 100vh;
+  background-color: #f4f7f6;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  /*overflow-x: hidden;*/
+}
+
+/* Sidebar (Menu à gauche) */
+.sidebar {
+  width: 260px;
+  background-color: #2c3e50;
+  color: white;
+  transition: all 0.3s;
+  display: flex;
+  flex-direction: column;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  z-index: 1000;
+}
+
+.sidebar.collapsed {
+  width: 70px;
+}
+
+.sidebar-header {
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid #34495e;
+}
+
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  padding: 10px 0;
+  overflow-y: auto;
+}
+
+.sidebar-nav a {
+  padding: 15px 20px;
+  color: #bdc3c7;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  transition: 0.2s;
+}
+
+.icon {
+  font-size: 20px;
+  min-width: 30px;
+  display: inline-block;
+}
+
+.nav-text {
+  margin-left: 15px;
+}
+
+.sidebar-nav a:hover, .sidebar-nav a.active {
+  background-color: #34495e;
+  color: white;
+  border-left: 4px solid #3498db;
+}
+
+/* Style du titre dans la Topbar */
+.page-title h1 {
+  font-size: 2rem;
+  color: #2c3e50;
+  margin: 0;
+}
+
+/* Style pour les icônes de la navigation latérale */
+.sidebar-nav .icon,
+.sidebar-nav i {
+  font-size: 24px;
+  min-width: 40px;
+  display: inline-block;
+  text-align: center;
+  color: #bdc3c7;
+  transition: color 0.3s;
+}
+
+.sidebar-nav a:hover .icon,
+.sidebar-nav a.active .icon {
+  color: #3498db;
+}
+
+/* Contenu Principal */
+.main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+
+}
+
+/* Barre du haut (Navbar) */
+.top-navbar {
+  height: 60px;
+  background: white;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 30px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.user-actions {
+  display: flex;
+  gap: 15px;
+}
+
+.btn-icon {
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  padding: 5px;
+  border-radius: 50%;
+  transition: background 0.2s;
+}
+
+.btn-icon:hover { background: #eee; }
+.logout:hover { background: #ffebee; }
+
+/* Corps du Dashboard (Le padding autour du router-outlet) */
+.dashboard-body {
+  padding: 30px;
+}

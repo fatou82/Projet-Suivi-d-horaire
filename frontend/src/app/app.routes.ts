@@ -9,6 +9,9 @@ import {StatsComponent} from './features/administrateur/stats/stats.component';
 import {GererPostesComponent} from './features/administrateur/gerer-postes/gerer-postes.component';
 import {JournalAuditComponent} from './features/administrateur/journal-audit/journal-audit.component';
 import { RegleConfigurationComponent} from './features/administrateur/regle-configuration/regle-configuration.component';
+import {EmployeStatsComponent} from './features/employe/employe-stats/employe-stats.component';
+import {EmployePointageComponent} from './features/employe/employe-pointage/employe-pointage.component';
+import {ProfileEditComponent} from './shared/compoments/edit-profil/edit-profil.component';
 
 export const routes: Routes = [
   //Si l'URL est vide '
@@ -38,5 +41,14 @@ export const routes: Routes = [
   { path: 'manager-dash', component: ManagerDashComponent },
 
   // Routes pour les autres dashboards
-  { path: 'employe-dash', component: EmployeDashComponent }
+  {
+    path: 'employe-dash',
+    component: EmployeDashComponent,
+    children: [
+      { path: 'dashboard', component: EmployeStatsComponent },
+      { path: 'pointage', component: EmployePointageComponent }, // Le composant avec les 4 boutons
+      { path: 'profil', component: ProfileEditComponent }, // Composant partagé
+      { path: '', redirectTo: 'dashboard', pathMatch: 'full' }
+    ]
+  }
 ];

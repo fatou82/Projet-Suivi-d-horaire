@@ -29,7 +29,7 @@ public class PosteController {
     // POST /api/postes
     @PostMapping
     @Operation(summary = "Créer un nouveau poste", 
-               description = "Ajoute un nouveau poste. Le nom et l'abréviation doivent être uniques.") // 🚨 NOUVELLE OPÉRATION
+               description = "Ajoute un nouveau poste. Le nom et l'abréviation doivent être uniques.")
     public ResponseEntity<Poste> createPoste(@Valid @RequestBody PosteDTO posteDTO) {
         Poste newPoste = posteService.createPoste(posteDTO);
         return new ResponseEntity<>(newPoste, HttpStatus.CREATED);
@@ -37,7 +37,7 @@ public class PosteController {
 
     // GET /api/postes
     @GetMapping
-    @Operation(summary = "Récupérer la liste de tous les postes") // 🚨 NOUVELLE OPÉRATION
+    @Operation(summary = "Récupérer la liste de tous les postes")
     public ResponseEntity<List<Poste>> getAllPostes() {
         List<Poste> postes = posteService.findAllPostes();
         return ResponseEntity.ok(postes);
@@ -45,7 +45,7 @@ public class PosteController {
 
     // GET /api/postes/{id}
     @GetMapping("/{id}")
-    @Operation(summary = "Récupérer un poste par son ID") // 🚨 NOUVELLE OPÉRATION
+    @Operation(summary = "Récupérer un poste par son ID")
     public ResponseEntity<Poste> getPosteById(@PathVariable Long id) {
         Poste poste = posteService.findPosteById(id);
         return ResponseEntity.ok(poste);
@@ -54,7 +54,7 @@ public class PosteController {
     // PUT /api/postes/{id}
     @PutMapping("/{id}")
     @Operation(summary = "Mettre à jour un poste existant", 
-               description = "Met à jour le nom, l'abréviation et la description d'un poste.") // 🚨 NOUVELLE OPÉRATION
+               description = "Met à jour le nom, l'abréviation et la description d'un poste.")
     public ResponseEntity<Poste> updatePoste(@PathVariable Long id, @Valid @RequestBody PosteDTO posteDTO) {
         Poste updatedPoste = posteService.updatePoste(id, posteDTO);
         return ResponseEntity.ok(updatedPoste);
@@ -63,7 +63,7 @@ public class PosteController {
     // DELETE /api/postes/{id}
     @DeleteMapping("/{id}")
     @Operation(summary = "Supprimer un poste", 
-               description = "Supprime un poste par son ID. Impossible si des employés y sont rattachés.") // 🚨 NOUVELLE OPÉRATION
+               description = "Supprime un poste par son ID. Impossible si des employés y sont rattachés.")
     public ResponseEntity<Void> deletePoste(@PathVariable Long id) {
         posteService.deletePoste(id);
         return ResponseEntity.noContent().build();

@@ -19,7 +19,11 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-
+import org.springframework.security.config.Customizer;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import java.util.List;
 
 @Configuration(proxyBeanMethods = false)
 @EnableWebSecurity
@@ -60,15 +64,19 @@ public class SecurityConfig {
         http
                 // Désactiver CSRF (typique pour les API REST stateless)
                 .csrf(AbstractHttpConfigurer::disable)
+                .cors(Customizer.withDefaults())
                 
                 // Définir les règles d'autorisation
                 .authorizeHttpRequests(auth -> auth
+                        // Autoriser toutes les requêtes OPTIONS (CORS preflight)
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         // Autoriser l'accès public (Auth et Swagger)
                         .requestMatchers(
                                 "/api/auth/**",
                                 "/v3/api-docs/**",
                                 "/swagger-ui/**",
-                                "/swagger-ui.html"
+                                "/swagger-ui.html",
+                                "/error"
                         ).permitAll()
                         
                       // 🎯 RÈGLES DÉTAILLÉES POUR /api/employes
@@ -81,7 +89,7 @@ public class SecurityConfig {
                         // 2. LISTE (GET /api/employes) : Restreinte
                         // Seuls l'Admin et la RH (et éventuellement le Manager) peuvent lister tous les employés.
                         .requestMatchers(HttpMethod.GET, "/api/employes")
-                            .hasAnyRole("ADMINISTRATEUR", "RESSOURCE_HUMAINE") 
+                            .hasAnyAuthority("ROLE_ADMINISTRATEUR", "ROLE_RESSOURCE_HUMAINE")
                             
                         // 3. MISE À JOUR DU RÔLE (PATCH /api/employes/{id}/role) : Très Restreinte
                         // Seul l'ADMINISTRATEUR peut changer le rôle d'un autre employé.
@@ -112,6 +120,10 @@ public class SecurityConfig {
                         // Nécessite d'être connecté (accessible à tous les rôles)
                         .requestMatchers(HttpMethod.PATCH, "/api/auth/change-password").authenticated()
 
+                        // 10. RÉCUPÉRER SON PROFIL (GET /api/auth/me) : Authentifié
+                        // Nécessite d'être connecté (accessible à tous les rôles)
+                        .requestMatchers(HttpMethod.GET, "/api/auth/me").authenticated()
+
                         // 🎯 NOUVELLES RÈGLES DÉTAILLÉES POUR /api/postes
 
                         // 1. CRÉATION (POST /api/postes) : Restreinte à Admin/RH
@@ -130,6 +142,14 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.DELETE, "/api/postes/{id}")
                             .hasAnyRole("ADMINISTRATEUR", "RESSOURCE_HUMAINE")
 
+                        // 5. RÈGLES POUR /api/audit Accès aux logs d'audit restreint à l'Admin et la RH
+                        .requestMatchers(HttpMethod.GET, "/api/audit/**")
+                        .hasAnyRole("ADMINISTRATEUR", "RESSOURCE_HUMAINE")
+
+                        // 6. RÈGLES POUR /api/admin/configurations Accès restreint à l'Admin uniquement
+                        .requestMatchers("/api/admin/configurations/**")
+                        .hasAnyRole("ADMINISTRATEUR")
+
                          // Règle par défaut (Toutes les autres requêtes sur des chemins non spécifiés)
                         .anyRequest().authenticated()
                 )
@@ -146,5 +166,19 @@ public class SecurityConfig {
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
+    }
+
+    // 5. Configuration CORS pour autoriser les requêtes depuis le front-end Angular
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOrigins(List.of("http://localhost:4200")); // Ton front Angular
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
+        configuration.setAllowedHeaders(List.of("Authorization", "Content-Type", "Cache-Control"));
+        configuration.setAllowCredentials(true);
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
     }
 }

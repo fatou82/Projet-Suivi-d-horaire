@@ -2,6 +2,8 @@ package com.fatou82.suivi.suivihoraireapi.dto;
 
 import lombok.Data;
 
+import java.util.List;
+
 @Data
 public class RegisterRequest {
     private String nom;
@@ -12,6 +14,8 @@ public class RegisterRequest {
     // Date attendu en format dd/MM/yyyy ou ISO (yyyy-MM-dd)
     private String dateEmbauche;
     // Nom du poste (ex: "Comptable")
-    private String roleName; // Ex: "MANAGER", "RESSOURCE_HUMAINE", "EMPLOYE"
+    private List<String> roleNames;// Ex: "MANAGER", "RESSOURCE_HUMAINE", "EMPLOYE"
     private String poste;
+    private Boolean actif;
+
 }

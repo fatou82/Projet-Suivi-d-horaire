@@ -1,0 +1,60 @@
+<div class="container-fluid p-4">
+  <div class="header-section">
+    <h2 class="page-title"><i class="fas fa-cog"></i> Paramètres du Système</h2>
+    <p class="subtitle">Configurez les règles de pointage, les seuils de retard, absence et les congés.</p>
+  </div>
+
+  <div class="settings-grid">
+    <div class="settings-card">
+      <div class="card-header">
+        <i class="fas fa-clock"></i>
+        <h3>Plages Horaires</h3>
+      </div>
+      <div class="card-body">
+        <div class="form-group" *ngFor="let config of getConfigsByGroup(['HORAIRE', 'HEURE_LIMITE_ABSENCE'])">
+          <label>{{ config.description }}</label>
+
+          <div class="input-group" *ngIf="config.nomCle === 'HORAIRE_DUREE_JOURNALIERE'; else timeInputTemplate">
+            <input type="number" class="form-control" [(ngModel)]="config.valeur">
+            <span class="input-group-text">h</span>
+          </div>
+
+          <ng-template #timeInputTemplate>
+            <input type="time" class="form-control" [(ngModel)]="config.valeur">
+          </ng-template>
+        </div>
+      </div> </div> <div class="settings-card">
+    <div class="card-header">
+      <i class="fas fa-user-clock"></i>
+      <h3>Seuils & Tolérances</h3>
+    </div>
+    <div class="card-body">
+      <div class="form-group" *ngFor="let config of getConfigsByGroup(['SEUIL', 'MIN_HEURE_SUPP'])">
+        <label>{{ config.description }}</label>
+        <div class="input-group">
+          <input [type]="config.nomCle === 'MIN_HEURE_SUPP' ? 'number' : 'time'"
+                 class="form-control" [(ngModel)]="config.valeur">
+          <span class="input-group-text" *ngIf="config.nomCle === 'MIN_HEURE_SUPP'">min</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+    <div class="settings-card">
+      <div class="card-header">
+        <i class="fas fa-calendar-alt"></i>
+        <h3>Gestion des Congés</h3>
+      </div>
+      <div class="card-body">
+        <div class="form-group" *ngFor="let config of getConfigsByGroup(['SOLDE'])">
+          <label>{{ config.description }}</label>
+          <input type="number" class="form-control" [(ngModel)]="config.valeur">
+        </div>
+      </div>
+    </div>
+  </div> <div class="footer-actions">
+  <button class="btn-save" (click)="saveAllConfigs()">
+    <i class="fas fa-save"></i> Enregistrer les modifications
+  </button>
+</div>
+</div>

@@ -1,0 +1,107 @@
+.header-section { margin-bottom: 30px; }
+.subtitle { color: #7f8c8d; font-size: 0.9rem; }
+
+.settings-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 25px;
+  margin-bottom: 30px;
+}
+
+.settings-card {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+  overflow: hidden;
+  border-top: 4px solid #3498db; /* Ta couleur bleue */
+}
+
+.card-header {
+  padding: 15px 20px;
+  background: #fcfcfc;
+  border-bottom: 1px solid #eee;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.card-header i { color: #2c3e50; font-size: 1.2rem; }
+.card-header h3 { margin: 0; font-size: 1.1rem; color: #2c3e50; }
+
+.card-body { padding: 20px; }
+
+.form-group { margin-bottom: 15px; }
+.form-group label {
+  display: block;
+  font-size: 0.85rem;
+  color: #34495e;
+  margin-bottom: 5px;
+  font-weight: 600;
+}
+
+.form-control {
+  max-width: 200px;
+  margin-top: 5px;
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #dcdde1;
+  border-radius: 4px;
+  transition: border 0.3s;
+}
+
+.form-control:focus {
+  outline: none;
+  border-color: #3498db;
+}
+
+.footer-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.btn-save {
+  background-color: #3498db;
+  color: white;
+  border: none;
+  padding: 12px 30px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background 0.2s;
+}
+
+.btn-save:hover { background-color: #2980b9; }
+
+input[type="number"] {
+  max-width: 100%;
+}
+
+.input-group {
+  display: flex;
+  align-items: stretch;
+  max-width: 320px; /* Aligné avec tes autres inputs */
+}
+
+.input-group .form-control {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+  margin-top: 0; /* Aligne avec l'icône à côté */
+  max-width: 100%;
+}
+
+.input-group-text {
+  background-color: #f8f9fa;
+  border: 1px solid #dcdde1;
+  border-left: none;
+  padding: 0 12px;
+  display: flex;
+  align-items: center;
+  font-size: 0.9rem;
+  color: #7f8c8d;
+  border-radius: 0 4px 4px 0;
+}
+
+.form-control {
+  max-width: 320px;
+  padding: 8px 12px;
+}

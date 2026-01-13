@@ -1,6 +1,9 @@
 package com.fatou82.suivi.suivihoraireapi.services;
 
+import com.fatou82.suivi.suivihoraireapi.annotations.LogAction;
+import com.fatou82.suivi.suivihoraireapi.dto.RegisterRequest;
 import com.fatou82.suivi.suivihoraireapi.entities.Employe;
+import com.fatou82.suivi.suivihoraireapi.entities.Poste;
 import com.fatou82.suivi.suivihoraireapi.entities.Role;
 import com.fatou82.suivi.suivihoraireapi.enums.RoleType;
 import com.fatou82.suivi.suivihoraireapi.repositories.EmployeRepository;
@@ -9,6 +12,7 @@ import com.fatou82.suivi.suivihoraireapi.repositories.PosteRepository;
 import com.fatou82.suivi.suivihoraireapi.services.AuditLogService;
 import com.fatou82.suivi.suivihoraireapi.exceptions.ResourceNotFoundException; // 📢 Import nécessaire
 import lombok.RequiredArgsConstructor;
+import lombok.extern.java.Log;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -23,7 +27,8 @@ public class EmployeService {
     private final RoleRepository roleRepository;
     private final PosteRepository posteRepository;
     private final AuditLogService auditLogService;
-    private final PasswordEncoder passwordEncoder; // Injecté depuis SecurityConfig
+    private final ConfigurationService configurationService;
+    private final PasswordEncoder passwordEncoder;
     /**
      * Assigne le préfixe du rôle (ex: ADMINISTRATEUR -> AD).
      */
@@ -97,62 +102,65 @@ public class EmployeService {
     /**
      * Méthode principale de création et d'initialisation d'un nouvel employé.
      */
+    @LogAction(actionType = "CREATE_EMPLOYE", entite = "Employe")
     public Employe createNewEmploye(Employe newEmploye) {
-        
-        // Assigner le rôle par défaut si non fourni (généralement EMPLOYE)
+        System.out.println("--- DEBUT createNewEmploye (Sauvegarde) ---");
+        System.out.println("Nombre de rôles avant save : " +
+                (newEmploye.getRoles() != null ? newEmploye.getRoles().size() : 0));
+        // 1. Sécurité : Si vraiment AUCUN rôle n'est là, on met EMPLOYE
         if (newEmploye.getRoles() == null || newEmploye.getRoles().isEmpty()) {
             Role defaultRole = roleRepository.findByNom(RoleType.EMPLOYE)
-                    .orElseThrow(() -> new RuntimeException("Rôle EMPLOYE par défaut non trouvé."));
-            Set<Role> defaultRoles = new HashSet<>();
-            defaultRoles.add(defaultRole);
-            newEmploye.setRoles(defaultRoles);
+                    .orElseThrow(() -> new RuntimeException("Rôle par défaut introuvable"));
+            newEmploye.setRoles(new HashSet<>(Collections.singletonList(defaultRole)));
         }
 
-        // 1. Hacher le mot de passe pour la sécurité
-        newEmploye.setMotDePasse(passwordEncoder.encode(newEmploye.getMotDePasse()));
-
-        // 2. Initialiser les champs obligatoires et par défaut
-        if (newEmploye.getDateEmbauche() == null) {
-            newEmploye.setDateEmbauche(LocalDate.now());
+        // 2. Hachage du mot de passe
+        if (newEmploye.getMotDePasse() != null) {
+            newEmploye.setMotDePasse(passwordEncoder.encode(newEmploye.getMotDePasse()));
         }
+
+        // 3. Initialisations par défaut
+        if (newEmploye.getDateEmbauche() == null) newEmploye.setDateEmbauche(LocalDate.now());
         newEmploye.setActif(true);
+
+        // 4. Solde de congé initial
         if (newEmploye.getSoldeConge() == null) {
-            newEmploye.setSoldeConge(25); // 25 jours par défaut
+            // On cherche la clé "SOLDE_CONGE_INITIAL", sinon on met 0 par sécurité
+            int soldeConfig = configurationService.findByKey("SOLDE_CONGE_INITIAL")
+                    .map(config -> Integer.parseInt(config.getValeur()))
+                    .orElse(0);
+            newEmploye.setSoldeConge(soldeConfig); //
         }
 
-        // 3. Générer le matricule
-        String matricule = generateMatricule(newEmploye);
-        newEmploye.setMatricule(matricule);
+        // 5. Matricule
+        newEmploye.setMatricule(generateMatricule(newEmploye));
 
-        // 4. Enregistrer l'employé
-        Employe savedEmploye = employeRepository.save(newEmploye); // 👈 Sauvegarder d'abord pour obtenir l'ID
-        
-        // 5. JOURNAL D'AUDIT ADMINISTRATIF : Création
-        String rolesList = newEmploye.getRoles().stream()
-            .map(r -> r.getNom().name()) // Assurez-vous d'avoir RoleType.name()
-            .reduce((a, b) -> a + ", " + b)
-            .orElse("AUCUN");
+        // 6. SAUVEGARDE
+        Employe saved = employeRepository.save(newEmploye);
+        System.out.println("Nombre de rôles APRES save : " + saved.getRoles().size()); // Log 4
+        System.out.println("--- FIN SAUVEGARDE ---");
 
-        String details = String.format("Création de l'employé %s %s. Matricule: %s. Rôles initiaux: %s.",
-            savedEmploye.getPrenom(), savedEmploye.getNom(), savedEmploye.getMatricule(), rolesList);
-        
-        auditLogService.logAdminAction("CREATE_EMPLOYE", "Employe", savedEmploye.getId(), details);
-        
-        return savedEmploye;
+        return saved;
     }
 
     /**
-     * Crée un nouvel employé à partir d'un DTO d'enregistrement (nom du poste donné).
+     * Crée un nouvel employé à partir d'un DTO d'enregistrement (plusieurs rôles possibles).
      */
+
     public Employe createNewEmployeFromRegister(com.fatou82.suivi.suivihoraireapi.dto.RegisterRequest req) {
+        System.out.println("Rôles reçus du Front : " + req.getRoleNames());
         Employe e = new Employe();
         e.setNom(req.getNom());
         e.setPrenom(req.getPrenom());
         e.setEmail(req.getEmail());
-        e.setMotDePasse(req.getMotDePasse());
+        if (req.getMotDePasse() == null || req.getMotDePasse().isBlank()) {
+            e.setMotDePasse("Pass123!"); // mon mot de passe par défaut
+        } else {
+            e.setMotDePasse(req.getMotDePasse());
+        }
         e.setAdresse(req.getAdresse());
 
-        // Parse dateEmbauche (supporte dd/MM/yyyy et ISO yyyy-MM-dd)
+        // 1. Parse dateEmbauche (supporte dd/MM/yyyy et ISO yyyy-MM-dd)
         if (req.getDateEmbauche() != null && !req.getDateEmbauche().isBlank()) {
             java.time.LocalDate parsed = null;
             try {
@@ -165,39 +173,40 @@ public class EmployeService {
             if (parsed != null) e.setDateEmbauche(parsed);
         }
 
-        // Resolve poste by name
+        // 2. Résolution du poste par son nom
         if (req.getPoste() != null && !req.getPoste().isBlank()) {
             com.fatou82.suivi.suivihoraireapi.entities.Poste p = posteRepository.findByNom(req.getPoste())
                     .orElseThrow(() -> new RuntimeException("Poste introuvable: " + req.getPoste()));
             e.setPoste(p);
         } else {
-            // Cette vérification est essentielle
-            throw new RuntimeException("Le poste est requis pour l'inscription."); 
+            throw new RuntimeException("Le poste est requis pour l'inscription.");
         }
 
-        // Assignation du rôle si spécifié dans le DTO
-        if (req.getRoleName() != null && !req.getRoleName().isBlank()) {
-        try {
-            RoleType specifiedRole = RoleType.valueOf(req.getRoleName().toUpperCase());
-            Role role = roleRepository.findByNom(specifiedRole)
-                    .orElseThrow(() -> new RuntimeException("Rôle spécifié introuvable: " + req.getRoleName()));
-            
-            Set<Role> rolesFromDto = new HashSet<>();
-            rolesFromDto.add(role);
-            e.setRoles(rolesFromDto);
-            
-        } catch (IllegalArgumentException ex) {
-            // Le rôle fourni dans le DTO n'est pas une valeur valide de l'enum RoleType
-            throw new RuntimeException("Rôle non valide: " + req.getRoleName());
-        }
+        // 3. Assignation MULTIPLE des rôles (Correction pour les 2 rôles)
+        if (req.getRoleNames() != null && !req.getRoleNames().isEmpty()) {
+            Set<Role> rolesSet = new HashSet<>();
+            for (String rName : req.getRoleNames()) {
+                try {
+                    RoleType specifiedRole = RoleType.valueOf(rName.toUpperCase());
+                    Role role = roleRepository.findByNom(specifiedRole)
+                            .orElseThrow(() -> new RuntimeException("Rôle spécifié introuvable: " + rName));
+                    rolesSet.add(role);
+                } catch (IllegalArgumentException ex) {
+                    throw new RuntimeException("Rôle non valide dans la liste: " + rName);
+                }
+            }
+            e.setRoles(rolesSet);
+            System.out.println("Rôles mappés dans l'objet Employe : " + e.getRoles().size()); // Log 2
         } else {
-            // Si aucun rôle n'est spécifié par l'Admin, on laisse 'e.roles' à null
-            // et la méthode createNewEmploye le mettra par défaut à EMPLOYE.
+            // Optionnel : Forcer EMPLOYE si la liste est vide
+            Role defaultRole = roleRepository.findByNom(RoleType.EMPLOYE)
+                    .orElseThrow(() -> new RuntimeException("Rôle par défaut introuvable"));
+            e.setRoles(Collections.singleton(defaultRole));
         }
 
+        // Appel de la méthode qui gère l'encodage du mdp, le matricule et l'enregistrement
         return createNewEmploye(e);
     }
-
     /**
      * Crée un nouvel employé pour l'auto-enregistrement (rôle forcé à EMPLOYE).
      */
@@ -276,31 +285,35 @@ public class EmployeService {
      * @param updateReq Le DTO contenant les nouvelles données.
      * @return L'entité Employe mise à jour.
      */
-    public Employe updateEmploye(Long id, com.fatou82.suivi.suivihoraireapi.dto.RegisterRequest updateReq) {
-        // 1. Trouver l'employé existant
+    @LogAction(actionType = "UPDATE_EMPLOYE", entite = "Employe")
+    public Employe updateEmploye(Long id, RegisterRequest updateReq) {
         Employe existingEmploye = employeRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Employe", "id", id.toString()));
 
-        // 2. Mettre à jour les champs autorisés
-        // Note: Le mot de passe n'est mis à jour que s'il est explicitement fourni
-        if (updateReq.getMotDePasse() != null && !updateReq.getMotDePasse().isBlank()) {
-            existingEmploye.setMotDePasse(passwordEncoder.encode(updateReq.getMotDePasse()));
+        // Mise à jour des rôles (Crucial pour la modale)
+        if (updateReq.getRoleNames() != null) {
+            Set<Role> newRoles = new HashSet<>();
+            for (String rName : updateReq.getRoleNames()) {
+                Role role = roleRepository.findByNom(RoleType.valueOf(rName.toUpperCase()))
+                        .orElseThrow(() -> new RuntimeException("Rôle introuvable: " + rName));
+                newRoles.add(role);
+            }
+            existingEmploye.setRoles(newRoles);
         }
-        
-        // Mise à jour des autres champs de base
+
+        // Autres mises à jour
         existingEmploye.setNom(updateReq.getNom());
         existingEmploye.setPrenom(updateReq.getPrenom());
-        existingEmploye.setEmail(updateReq.getEmail()); 
+        existingEmploye.setEmail(updateReq.getEmail());
         existingEmploye.setAdresse(updateReq.getAdresse());
-        
-        // Mise à jour du poste (si fourni)
+        existingEmploye.setActif(updateReq.getActif()); // Utilise le getter de ton DTO
+
         if (updateReq.getPoste() != null && !updateReq.getPoste().isBlank()) {
-            com.fatou82.suivi.suivihoraireapi.entities.Poste p = posteRepository.findByNom(updateReq.getPoste())
+            Poste p = posteRepository.findByNom(updateReq.getPoste())
                     .orElseThrow(() -> new RuntimeException("Poste introuvable: " + updateReq.getPoste()));
             existingEmploye.setPoste(p);
         }
 
-        // 3. Enregistrer les modifications
         return employeRepository.save(existingEmploye);
     }
 
@@ -312,6 +325,7 @@ public class EmployeService {
      * @param updateReq Les données de mise à jour (DTO).
      * @return L'employé mis à jour.
      */
+    @LogAction(actionType = "UPDATE_SELF", entite = "Employe")
     public Employe updateSelf(String email, com.fatou82.suivi.suivihoraireapi.dto.RegisterRequest updateReq) {
         
         // 1. Trouver l'employé existant par son email principal
@@ -413,6 +427,7 @@ public class EmployeService {
      * @param req DTO contenant l'ancien et le nouveau mot de passe.
      * @return L'employé mis à jour.
      */
+    @LogAction(actionType = "CHANGE_OWN_PASSWORD", entite = "Employe")
     public Employe changePassword(String email, com.fatou82.suivi.suivihoraireapi.dto.ChangePasswordRequest req) {
         
         Employe existingEmploye = employeRepository.findByEmail(email)
@@ -428,11 +443,16 @@ public class EmployeService {
             throw new IllegalArgumentException("Le nouveau mot de passe doit être différent de l'ancien.");
         }
 
-        // 3. Hacher et mettre à jour le nouveau mot de passe
+        // 3. Vérifier la confirmation
+        if (!req.getNouveauMotDePasse().equals(req.getConfirmationMotDePasse())) {
+            throw new IllegalArgumentException("Le nouveau mot de passe et la confirmation ne correspondent pas.");
+        }
+
+        // 4. Hacher et mettre à jour le nouveau mot de passe
         String hashedPassword = passwordEncoder.encode(req.getNouveauMotDePasse());
         existingEmploye.setMotDePasse(hashedPassword);
         
-        // 4. Sauvegarde
+        // 5. Sauvegarde
         return employeRepository.save(existingEmploye);
     }
     /**
@@ -464,7 +484,17 @@ public class EmployeService {
 
         return savedEmploye;
     }
-    
+
+    /**
+     * Récupère les informations de l'employé connecté par son email.
+     * @param email L'email de l'utilisateur connecté (Principal).
+     * @return L'entité Employe correspondante.
+     */
+    public Employe getSelf(String email) {
+        return employeRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("Employe", "email", email));
+    }
+
     /**
      * Désactive (soft delete) un employé en mettant son statut 'actif' à false.
      * @param id L'identifiant de l'employé à désactiver.

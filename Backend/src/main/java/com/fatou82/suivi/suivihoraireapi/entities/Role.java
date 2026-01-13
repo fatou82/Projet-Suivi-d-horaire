@@ -19,17 +19,15 @@ import com.fatou82.suivi.suivihoraireapi.enums.RoleType;
 public class Role {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @lombok.EqualsAndHashCode.Include
-    private Long id;
+    private Long id; // On retire l'include ici
 
-    @Enumerated(EnumType.STRING) // Stocke le nom de l'Enum ('ADMINISTRATEUR', 'RH', etc.)
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false, unique = true)
-    private RoleType nom; // nom : string (maintenant un Enum)    
-    
-    // Relation Many-to-Many inverse avec Employe
+    @lombok.EqualsAndHashCode.Include // ON MET L'INCLUDE ICI
+    private RoleType nom;
+
     @ManyToMany(mappedBy = "roles", fetch = FetchType.LAZY)
     @lombok.ToString.Exclude
     @JsonIgnore
     private Set<Employe> employes;
 }
-

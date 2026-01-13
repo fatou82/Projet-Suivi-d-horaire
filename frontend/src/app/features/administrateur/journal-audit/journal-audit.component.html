@@ -1,0 +1,62 @@
+<div class="container-fluid p-4">
+  <h2 class="page-title">Journal d'Audit & Traçabilité</h2>
+
+  <div class="action-bar">
+    <div class="filter-group">
+      <div class="search-box">
+        <input
+          type="text"
+          class="form-control"
+          placeholder="Rechercher un acteur, une action..."
+          [(ngModel)]="searchTerm"
+          (input)="applyFilter()">
+      </div>
+      <button class="btn-filter" [class.active]="filterType === 'TOUT'" (click)="applyFilter('TOUT')">
+        Tout l'historique
+      </button>
+      <button class="btn-filter" [class.active]="filterType === 'ADMIN'" (click)="applyFilter('ADMIN')">
+        Actions Administratives
+      </button>
+      <button class="btn-filter" [class.active]="filterType === 'MANUEL'" (click)="applyFilter('MANUEL')">
+        Modifications Manuelles
+      </button>
+    </div>
+  </div>
+
+  <div class="table-responsive shadow-sm">
+    <table class="table align-middle">
+      <thead>
+      <tr>
+        <th>Date & Heure</th>
+        <th>Acteur</th>
+        <th>Action</th>
+        <th>Cible</th>
+        <th>Détails de la modification</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr *ngFor="let log of filteredLogs">
+        <td class="text-muted small">
+          {{ log.dateAction | date:'dd/MM/yyyy HH:mm:ss' }}
+        </td>
+        <td>
+          <span class="fw-bold">{{ log.employe?.nom || 'Admin' }}</span>
+        </td>
+        <td>
+    <span class="action-badge" [ngClass]="log.actionType">
+      {{ log.actionType }}
+    </span>
+        </td>
+        <td class="cible-cell">
+          <span class="badge-entite">{{ log.entiteCible }}</span>
+          <small *ngIf="log.entiteId" class="text-muted"> (ID: {{ log.entiteId }})</small>
+          <small *ngIf="!log.entiteId && log.entiteCible === 'RegleConfiguration'" class="text-muted"> (Système)</small>
+        </td>
+        <td class="details-cell">
+          {{ log.details }}
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

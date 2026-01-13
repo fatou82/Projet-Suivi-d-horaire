@@ -1,0 +1,141 @@
+/* --- Structure identique aux Postes --- */
+.container-fluid { background-color: #f4f7f6; min-height: 100vh; }
+.page-title { color: #2c3e50; font-weight: 700; margin-bottom: 30px; }
+
+.action-bar {
+  margin-bottom: 25px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+/* --- Style des Boutons de Filtre --- */
+.filter-group { display: flex; gap: 12px; }
+
+.btn-filter {
+  padding: 10px 20px;
+  border-radius: 25px;
+  border: 1px solid #e0e0e0;
+  background: white;
+  color: #7f8c8d;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.btn-filter.active {
+  background-color: #3498db;
+  color: white;
+  border-color: #3498db;
+  box-shadow: 0 4px 10px rgba(52, 152, 219, 0.2);
+}
+
+/* --- Style du Tableau (Ergonomie) --- */
+.table-responsive {
+  background: white;
+  border-radius: 12px;
+  padding: 15px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+.table {
+  width: 100%; /* Force la table à prendre 100% du conteneur */
+  margin-bottom: 0;
+}
+
+.table thead th {
+  background-color: #f8faff;
+  color: #606a77;
+  text-transform: uppercase;
+  font-size: 0.8rem;
+  padding: 15px;
+  border: none;
+  font-weight: 700;
+  text-align: left;
+}
+
+.table tbody tr:hover {
+  background-color: #f3f6fb !important;
+  box-shadow: inset 4px 0 0 #3498db;
+}
+
+.table td {
+  padding: 15px;
+  border-bottom: 1px solid #f1f1f1;
+  font-size: 0.9rem;
+}
+
+/* --- Badges d'Actions (Couleurs selon type) --- */
+.action-badge {
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 0.75rem;
+  display: inline-block;
+}
+
+/* Vert pour les créations/activations */
+.action-badge.CREATE_POSTE, .action-badge.ACTIVATE_EMPLOYE {
+  background-color: #e6fffa; color: #38a169;
+}
+
+/* Orange pour les modifications */
+.action-badge.UPDATE_POSTE {
+  background-color: #fffaf0; color: #dd6b20;
+}
+
+/* Rouge pour les suppressions/désactivations */
+.action-badge.DEACTIVATE_EMPLOYE, .action-badge.DELETE_POSTE {
+  background-color: #fff5f5; color: #e53e3e;
+}
+
+/* --- Éléments visuels --- */
+.user-info { display: flex; align-items: center; gap: 10px; }
+.user-icon {
+  width: 32px; height: 32px;
+  background: #ebf5ff; color: #3498db;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+}
+
+.target-label {
+  background: #f1f5f9;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-weight: 600;
+}
+
+.details-cell {
+  /* On retire le max-width pour laisser le texte s'étaler */
+  color: #64748b;
+  font-size: 0.85rem;
+  font-style: italic;
+  word-break: break-word; /* Évite que le texte sorte de l'écran si c'est trop long */
+}
+
+.search-box {
+  min-width: 300px;
+}
+
+.search-box .form-control {
+  border-radius: 20px;
+  padding: 10px 25px;
+  border: 1px solid #e0e0e0;
+}
+
+/* --- Tableau pleine largeur --- */
+.table {
+  width: 100% !important;
+  margin-bottom: 0;
+}
+
+.details-cell {
+  color: #64748b;
+  font-size: 0.85rem;
+  font-style: italic;
+  word-break: break-word; /* Permet au texte long de revenir à la ligne */
+}
+
+

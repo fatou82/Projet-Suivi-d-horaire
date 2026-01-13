@@ -22,10 +22,10 @@ public abstract class EmployeMapper {
     protected RoleRepository roleRepository; 
 
     // Conversion Entité vers DTO 
-    @Mapping(target = "posteNom", source = "poste.nom") 
-    @Mapping(target = "roles", 
-             expression = "java(employe.getRoles().stream().map(r -> r.getNom().name()).collect(java.util.stream.Collectors.toList()))") 
-    @Mapping(target = "motDePasse", ignore = true) 
+    @Mapping(target = "posteNom", source = "poste.nom")
+    @Mapping(target = "roleNames",
+            expression = "java(employe.getRoles().stream().map(r -> r.getNom().name()).collect(java.util.stream.Collectors.toList()))")
+    @Mapping(target = "motDePasse", ignore = true)
     public abstract EmployeDTO toDto(Employe employe);
     
     // Conversion DTO vers Entité (utilise automatiquement mapRolesToEntity)

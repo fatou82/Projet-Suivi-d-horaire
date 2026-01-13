@@ -11,4 +11,7 @@ public class ChangePasswordRequest {
 
     @NotBlank
     private String nouveauMotDePasse;
+
+    @NotBlank
+    private String confirmationMotDePasse;
 }

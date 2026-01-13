@@ -99,7 +99,7 @@ public class AuthController {
      * Endpoint d'enregistrement public d'un employé
      */
     @Operation(summary = "Enregistrement d'un nouvel employé",
-               description = "Crée un compte employé. Le rôle par défaut (EMPLOYE) sera attribué si non fourni.")
+               description = "Crée un compte employé. Le rôle par défaut (EMPLOYE) sera attribué.")
     @ApiResponse(responseCode = "201", description = "Employé créé avec succès")
     @PostMapping("/register")
     public ResponseEntity<?> registerUser(@Valid @RequestBody com.fatou82.suivi.suivihoraireapi.dto.RegisterRequest registerRequest) {
@@ -132,5 +132,19 @@ public class AuthController {
         // 200 OK est standard pour un PATCH réussi
         return ResponseEntity.ok(employeDTO);
     }
-    
+
+    /**
+     * Endpoint: GET /api/auth/me
+     * Retourne les informations de l'utilisateur connecté.
+     */
+    @Operation(summary = "Récupérer les informations de l'utilisateur connecté",
+               description = "Retourne les détails de l'employé actuellement authentifié.")
+    @GetMapping("/me")
+    public ResponseEntity<EmployeDTO> getConnectedUser(Principal principal) {
+        if (principal == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        Employe employe = employeService.getSelf(principal.getName());
+        return ResponseEntity.ok(employeMapper.toDto(employe));
+    }
 }

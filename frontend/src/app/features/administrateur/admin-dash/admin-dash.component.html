@@ -16,9 +16,13 @@
         <i class="fas fa-briefcase icon"></i>
         <span class="nav-text" *ngIf="!isSidebarCollapsed">Gestion des Postes</span>
       </a>
-      <a routerLink="/admin/rapports" routerLinkActive="active">
-        <i class="fas fa-file-alt icon"></i>
-        <span class="nav-text" *ngIf="!isSidebarCollapsed">Rapports</span>
+      <a routerLink="/admin-dash/journal-audit" routerLinkActive="active" >
+        <i class="fas fa-history"></i>
+        <span class="nav-text" *ngIf="!isSidebarCollapsed">Journal d'Audit</span>
+      </a>
+      <a routerLink="/admin-dash/regle-configuration" routerLinkActive="active">
+        <i class="fas fa-cogs icon"></i>
+        <span class="nav-text" *ngIf="!isSidebarCollapsed">Paramètres</span>
       </a>
     </nav>
   </aside>

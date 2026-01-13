@@ -1,5 +1,7 @@
 package com.fatou82.suivi.suivihoraireapi.entities;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDateTime;
@@ -11,8 +13,9 @@ import java.time.LocalDateTime;
 public class AuditLog {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id; 
+    private Long id;
 
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime dateAction; 
     
     private String actionType; 
@@ -24,5 +27,6 @@ public class AuditLog {
     // Relation 'generer' avec Employe (acteur de l'action)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "employe_id", nullable = false)
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "auditLogs", "motDePasse"}) // Ajoute ceci
     private Employe employe; // Un Employe 'genere' 1..* AuditLog
 }

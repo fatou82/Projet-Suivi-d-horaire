@@ -7,6 +7,8 @@ import {EmployeDashComponent} from './features/employe/employe-dash/employe-dash
 import {GererEmployesComponent} from './features/administrateur/gerer-employes/gerer-employes.component';
 import {StatsComponent} from './features/administrateur/stats/stats.component';
 import {GererPostesComponent} from './features/administrateur/gerer-postes/gerer-postes.component';
+import {JournalAuditComponent} from './features/administrateur/journal-audit/journal-audit.component';
+import { RegleConfigurationComponent} from './features/administrateur/regle-configuration/regle-configuration.component';
 
 export const routes: Routes = [
   //Si l'URL est vide '
@@ -21,8 +23,10 @@ export const routes: Routes = [
     component: AdminDashComponent,
     children: [
       { path: 'dashboard', component: StatsComponent }, // Par défaut on voit les stats
-      { path: 'gerer-employes', component: GererEmployesComponent }, // Le tableau
+      { path: 'gerer-employes', component: GererEmployesComponent },
       { path: 'gerer-postes', component: GererPostesComponent },
+      { path: 'journal-audit', component: JournalAuditComponent },
+      { path: 'regle-configuration', component: RegleConfigurationComponent },
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' }
     ]
   },

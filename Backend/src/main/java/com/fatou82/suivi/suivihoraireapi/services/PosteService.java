@@ -1,5 +1,6 @@
 package com.fatou82.suivi.suivihoraireapi.services;
 
+import com.fatou82.suivi.suivihoraireapi.annotations.LogAction;
 import com.fatou82.suivi.suivihoraireapi.entities.Poste;
 import com.fatou82.suivi.suivihoraireapi.repositories.PosteRepository;
 import com.fatou82.suivi.suivihoraireapi.repositories.EmployeRepository;
@@ -23,6 +24,7 @@ public class PosteService {
     /**
      * Crée un nouveau poste après vérification de l'unicité.
      */
+    @LogAction(actionType = "CREATE_POSTE", entite = "Poste")
     public Poste createPoste(PosteDTO posteDTO) {
         
         // 1. Vérification de l'unicité du Nom
@@ -62,6 +64,7 @@ public class PosteService {
     /**
      * Met à jour un poste existant.
      */
+    @LogAction(actionType = "UPDATE_POSTE", entite = "Poste")
     public Poste updatePoste(Long id, PosteDTO posteDTO) {
         Poste existingPoste = findPosteById(id);
 
@@ -92,10 +95,11 @@ public class PosteService {
      * Supprime un poste par son ID.
      * NOTE: Une vérification devrait être ajoutée pour s'assurer qu'aucun employé n'est rattaché à ce poste.
      */
+    @LogAction(actionType = "DELETE_POSTE", entite = "Poste")
     public void deletePoste(Long id) {
         Poste posteToDelete = findPosteById(id);
         
-        // 🚨 NOUVELLE VÉRIFICATION
+        // Vérification des employés rattachés à ce poste
         long employeCount = employeRepository.countByPosteId(id);
         
         if (employeCount > 0) {

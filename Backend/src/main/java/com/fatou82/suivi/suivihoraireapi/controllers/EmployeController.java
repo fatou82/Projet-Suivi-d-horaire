@@ -33,7 +33,7 @@ public class EmployeController {
     private final EmployeMapper employeMapper;
 
     /**
-     * Endpoint: GET /api/employes
+     * Endpoint: post /api/employes
      * Permet la création d'un employé.
      */
 
@@ -116,8 +116,7 @@ public class EmployeController {
     @PatchMapping("/{id}/role") // PATCH est souvent utilisé pour des mises à jour partielles
     public ResponseEntity<EmployeDTO> updateRole(
         @PathVariable Long id, 
-        @RequestBody UpdateRolesRequest roleRequest) { // Utiliser le DTO List
-        
+        @RequestBody UpdateRolesRequest roleRequest) {
         // Le service reçoit maintenant une liste de noms de rôles
         Employe updatedEmploye = employeService.updateEmployeRoles(id, roleRequest.getRoleNames()); 
         EmployeDTO employeDTO = employeMapper.toDto(updatedEmploye);

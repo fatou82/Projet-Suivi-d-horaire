@@ -1,5 +1,6 @@
 package com.fatou82.suivi.suivihoraireapi.entities;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDateTime;
@@ -28,5 +29,6 @@ public class Pointage {
     // Relation 'effectue' avec Employe
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "employe_id", nullable = false)
+    @JsonBackReference
     private Employe employe; // Un Employe 'effectue' 1..* Pointage
 }

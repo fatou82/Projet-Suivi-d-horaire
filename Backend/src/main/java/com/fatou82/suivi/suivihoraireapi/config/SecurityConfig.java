@@ -142,13 +142,21 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.DELETE, "/api/postes/{id}")
                             .hasAnyRole("ADMINISTRATEUR", "RESSOURCE_HUMAINE")
 
+                        // 🎯 RÈGLES POUR /api/audits Accès aux logs d'audit restreint à l'Admin et la RH
+
                         // 5. RÈGLES POUR /api/audit Accès aux logs d'audit restreint à l'Admin et la RH
                         .requestMatchers(HttpMethod.GET, "/api/audit/**")
                         .hasAnyRole("ADMINISTRATEUR", "RESSOURCE_HUMAINE")
 
+                        // 🎯 RÈGLES POUR /api/admin/configurations Accès restreint à l'Admin uniquement
+
                         // 6. RÈGLES POUR /api/admin/configurations Accès restreint à l'Admin uniquement
                         .requestMatchers("/api/admin/configurations/**")
                         .hasAnyRole("ADMINISTRATEUR")
+
+                        // 🎯 Règles POUR /api/pointages
+                        // 7. Autorise tous les employés connectés (ADMIN, RH, MANAGER, EMPLOYE) à pointer
+                        .requestMatchers("/api/pointages/**").authenticated()
 
                          // Règle par défaut (Toutes les autres requêtes sur des chemins non spécifiés)
                         .anyRequest().authenticated()

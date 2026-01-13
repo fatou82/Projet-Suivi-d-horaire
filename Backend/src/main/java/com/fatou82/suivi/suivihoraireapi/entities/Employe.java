@@ -1,5 +1,7 @@
 package com.fatou82.suivi.suivihoraireapi.entities;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.*;
 import java.util.*;
@@ -28,6 +30,7 @@ public class Employe {
     private String email;
 
     @Column(nullable = false)
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String motDePasse;
 
     @Column(nullable = false, unique = true)
@@ -68,6 +71,7 @@ public class Employe {
     // Relation avec Pointage (1 Employe 'effectue' plusieurs Pointage)
     @OneToMany(mappedBy = "employe", fetch = FetchType.LAZY)
     @lombok.ToString.Exclude
+    @JsonManagedReference
     private Set<Pointage> pointages;
 
     // Relation avec AuditLog (1 Employe 'genere' plusieurs AuditLog)

@@ -1,6 +1,8 @@
 package com.fatou82.suivi.suivihoraireapi.config;
 
 import com.fatou82.suivi.suivihoraireapi.annotations.LogAction;
+import com.fatou82.suivi.suivihoraireapi.entities.Pointage;
+import com.fatou82.suivi.suivihoraireapi.enums.PointageType;
 import com.fatou82.suivi.suivihoraireapi.services.AuditLogService;
 import com.fatou82.suivi.suivihoraireapi.entities.Employe; // Assurez-vous d'importer votre entité
 import lombok.RequiredArgsConstructor;
@@ -33,6 +35,23 @@ public class AuditAspect {
                     details = String.format("[BULK UPDATE] %d paramètres système mis à jour.", configs.size());
                 }
             }
+
+            // CAS SPECIAL : Pointage (Entrée/Sortie)
+            else
+            if (result instanceof Pointage) {
+                Pointage p = (Pointage) result;
+                String heureFmt = p.getHeurePointage().toLocalTime().toString().substring(0, 5); // Ex: "17:05"
+
+                if (p.getTypePointage().equals(PointageType.SORTIE)) {
+                    // Affichage combiné : Heure de sortie + Durée calculée
+                    details = String.format("[SORTIE] Pointage à %s | Durée totale travaillée : %.2f h",
+                            heureFmt, p.getDureeTotale());
+                } else {
+                    details = String.format("[%s] Pointage enregistré à %s",
+                            p.getTypePointage(), heureFmt);
+                }
+            }
+
             // CAS GENERAL : result n'est pas null (Employe, Poste, etc.)
             else if (result != null) {
                 try {
